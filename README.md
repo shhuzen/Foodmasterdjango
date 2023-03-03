@@ -1,4 +1,4 @@
-# Foodproject
+# Foodproject 0.0.1 alpha
 ## first project on github
 ## Food managment system on django
 
