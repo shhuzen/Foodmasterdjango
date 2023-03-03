@@ -1,26 +1,15 @@
-{% load static %}
+{% extends 'base.html' %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
 
-<script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
-    <link rel="stylesheet" href="items/css/style.css">
-<link rel="stylesheet" href="items/css/bootstrap.min.css">
-    <link rel="stylesheet" href="items/css/bootstrap-icons.css">
-    <!--<link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon"> -->
-<script src="items/script.js"></script>
-
-    <link rel="stylesheet" href="items/css/datatables.min.css"/>
-    <link rel="stylesheet" href="items/css/select2.min.css"/>
-    <link rel="stylesheet" href="items/css/jquery.json-viewer.css"/>
-    <link rel="stylesheet" href="items/css/style.css ">
-    <link rel="stylesheet" href="items/css/demo.css ">
     <title>{% block title %} {% endblock %} </title>
 
 {% load bootstrap5 %}
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+
 {%block content%}
 <div class="modal fade" id="ModalAdd" data-bs-backdrop="static" data-bs-keyboard="false"  tabindex="-1"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg ">
@@ -73,12 +62,17 @@
     </div>
     </div>
 
+<div class="container">
+<nav class="navbar navbar-light bg-light">
 
     <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
-
-
+    </nav>
+</div>
+<div class="container">
 <div class="modal-body">
+
 <table id="Products" class="table table-hover table-bordered dataTable display" style="width: 100%;" >
+
     <thead>
         <tr>
 
@@ -96,10 +90,14 @@
     <tbody class="usrtbl">
     </tbody>
 </table>
+
+</div>
 </div>
 <link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
 <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
 
+
+<div id="Hidediv" class="container" style="display:block">
 {% load cart_tag %}
 
 
@@ -108,7 +106,8 @@
 <li>Корзина:</li>
 {% else %}
 {% endif %}
-<div style="display:flex">
+<div>
+<div class="col-md-auto" style="display:flex">
 {% for key,value in request.session.cart.items %}
 <img src="{{value.image}}" width="120" height="80"><br>
    <ul>
@@ -121,18 +120,39 @@
    </ul>
 
 {% endfor %}
-<div>
+
+
+    </div>
+<div class="col-3">
             {% if request.session.cart|length > 0 %}
-<li>Общая стоимость {{ total }} Рубля</li>
     {% else %}
     <li>Ваша корзина пуста</li>
      {% endif %}
 
-<a href="{% url 'cart_detail' %}">Перейти в корзину</a>
 
-<a id="#clear_cart" class="clear_cart" onclick="" href="{% url 'cart_clear' %}">Очистить корзину</a>
 </div>
-</div>
+    </div>
+    </div>
+    <div>
+        </div>
+    <div class="container">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+<a role="button" class="btn btn-success" href="{% url 'cart_detail' %}">Перейти в корзину</a>
+<button role="button" onclick="showDiv()" class="hide btn btn-success">Показать/Скрыть корзину</button>
+
+<a id="#clear_cart" class="clear_cart btn btn-danger" onclick="" href="{% url 'cart_clear' %}">Очистить корзину</a>
+                    {% if request.session.cart|length > 0 %}
+        <button type="button" class="btn btn-primary">
+   Общая стоимость<span class="badge success"> {{ total }}</span>
+  <span class="sr-only"> Рубля</span>
+</button>
+
+    {% else %}
+     {% endif %}
+    </nav>
+    </div>
 {%endblock%}
 {% block js %}
 <script>
@@ -140,9 +160,13 @@ document.addEventListener('DOMContentLoaded', function(e){ // ждем окон�
   setTimeout(function(){
         var myElement = document.querySelector('.clear_cart') // ищем нужный элемент
         myElement.click() // клик!
-        alert("Корзина очищена")
+    alert("Корзина очищена нажмите ок чтоб продолжить!")
+
     }, 100000) // 5000 msec = 5 sec
+
 })
+$(".clear_cart").click(function() {
+x});
 </script>
 <script>
 let web = new WebSocket("wss://"+window.location.host+"/check/")
@@ -231,6 +255,14 @@ $("#FormSend").on("submit", function(event){
 
 </script>
 <script>
+function showDiv() {
+d = document.getElementById('Hidediv')
+if(d.style.display == "block"){
+   d.style.display = "none";
+   }
+   else{
+    d.style.display = "block";}
+}
 function addcarto(id){
  $.ajax({
         url:`cart/add/${id}`,
@@ -248,11 +280,10 @@ function addcarto(id){
         url:`cart/item_decrement/${id}`,
         method:"GET",
         success:function(){
-             table_init()
              location.reload();
         },
          error:function(){
-             table_init()
+
              location.reload();
         }
     });}
@@ -261,12 +292,10 @@ function addcarto(id){
         url:`cart/item_increment/${id}`,
         method:"GET",
         success:function(){
-             table_init()
             location.reload();
         },
          error:function(){
-             table_init()
-             location.reload();
+
 
         }
     });}
