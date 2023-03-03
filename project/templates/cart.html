@@ -1,0 +1,56 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"
+    integrity="sha256-c9vxcXyAG4paArQG3xk6DjyW/9aHxai2ef9RpMWO44A=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<div id="content2" style="background: #fff;border-bottom: 1px solid #ffffff;">
+{% load cart_tag %}
+
+
+
+  <div class="tokenDet"
+        style="padding: 15px;border: 1px solid #000;width: 80%;margin: 0 auto;position: relative;overflow: hidden;">
+        <div class="title" style="text-align: center; color: green; border-bottom: 1px solid #000;margin-bottom: 15px;">
+            <h2>Чек на сумму:{{total}} рублей</h2>
+        </div>
+{% if request.session.cart|length > 0 %}
+
+    <li>Количество товара : {{request.session.cart|length}}</li>
+<li>Корзина:</li>
+{% else %}
+{% endif %}
+<div style="display:flex">
+{% for key,value in request.session.cart.items %}
+<img src="{{value.image}}" width="120" height="80"><br>
+   <ul>
+       <li>Название: {{value.name}}<br></li>
+    <li>Цена: {{value.price}} р. <br></li>
+    <li>Количество: {{value.quantity}}  <br></li>
+     <li>Стоимость: {{ value.price|multiply:value.quantity }} р.</li>
+
+   </ul>
+
+{% endfor %}
+
+</div>
+    <li>Общая стоимость {{ total }}</li>
+</div>
+</div>
+
+<div>
+
+    <button class="btn btn-info" id="downloadPDF">Распечать чек в PDF</button>
+
+</div>
+
+    <script>$('#downloadPDF').click(function () {
+    domtoimage.toPng(document.getElementById('content2'))
+        .then(function (blob) {
+            var pdf = new jsPDF('l', 'pt', [$('#content2').width(), $('#content2').height()]);
+
+            pdf.addImage(blob, 'PNG', 0, 0, $('#content2').width(), $('#content2').height());
+            pdf.save("{{total}}rub.pdf");
+
+            that.options.api.optionsChanged();
+        });
+});
+</script>

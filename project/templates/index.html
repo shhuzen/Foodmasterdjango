@@ -1,0 +1,273 @@
+{% load static %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
+
+<script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" href="items/css/style.css">
+<link rel="stylesheet" href="items/css/bootstrap.min.css">
+    <link rel="stylesheet" href="items/css/bootstrap-icons.css">
+    <!--<link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon"> -->
+<script src="items/script.js"></script>
+
+    <link rel="stylesheet" href="items/css/datatables.min.css"/>
+    <link rel="stylesheet" href="items/css/select2.min.css"/>
+    <link rel="stylesheet" href="items/css/jquery.json-viewer.css"/>
+    <link rel="stylesheet" href="items/css/style.css ">
+    <link rel="stylesheet" href="items/css/demo.css ">
+    <title>{% block title %} {% endblock %} </title>
+
+{% load bootstrap5 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{%block content%}
+<div class="modal fade" id="ModalAdd" data-bs-backdrop="static" data-bs-keyboard="false"  tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Новое продукт</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="FormSend" method="POST" class="modal-body" enctype="multipart/form-data" >
+        <div>
+            <div class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label class="form-label">Название продукта</label>
+                    <input class="form-control" id="req" data="col_2" name="name">
+                    <div class="invalid-feedback">
+                        Такое требование уже есть
+                    </div>
+                </div>
+                <div class="col-12" id="adder">
+                </div>
+                  <div class="col-12">
+
+                    <label class="form-label">Общее количество</label>
+                    <input required type="number" class="form-control" data="allquantity" name="allquantity" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Описание</label>
+                    <input required type="text" class="form-control" data="col_zakaz4ik" name="desc" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Фото</label>
+                    <input type="file" class="form-control" name="file_more">
+                </div>
+                <div class="col-12">
+    <label class="form-label">Цена</label>
+                    <input required type="number" class="form-control" data="col_zakaz4ik" name="price" >
+                </div>
+                <div class="col-12">
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="sub" data-bs-dismiss="modal" class="btn btn-primary">Добавить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+        </form>
+      </div>
+    </div>
+    </div>
+
+
+    <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
+
+
+<div class="modal-body">
+<table id="Products" class="table table-hover table-bordered dataTable display" style="width: 100%;" >
+    <thead>
+        <tr>
+
+
+            <th onclick="">Количество</th>
+
+            <th onclick="">Название</th>
+            <th class="sorting sorting_desc" onclick="delete_duplicate()">Цена</th>
+            <th onclick="">Описание</th>
+            <th onclick="">Фото</th>
+            <th onclick="">Действие</th>
+
+        </tr>
+    </thead>
+    <tbody class="usrtbl">
+    </tbody>
+</table>
+</div>
+
+
+{% load cart_tag %}
+
+
+{% if request.session.cart|length > 0 %}
+<li>Количество товара : {{request.session.cart|length}}</li>
+<li>Корзина:</li>
+{% else %}
+{% endif %}
+<div style="display:flex">
+{% for key,value in request.session.cart.items %}
+<img src="{{value.image}}" width="120" height="80"><br>
+   <ul>
+       <li>Название: {{value.name}}<br></li>
+    <li>Цена: {{value.price}} р. <br></li>
+    <li>Количество: {{value.quantity}}  <br></li>
+
+     <li>Стоимость: {{ value.price|multiply:value.quantity }} р.</li>
+
+   </ul>
+
+{% endfor %}
+<div>
+            {% if request.session.cart|length > 0 %}
+<li>Общая стоимость {{ total }} Рубля</li>
+    {% else %}
+    <li>Ваша корзина пуста</li>
+     {% endif %}
+
+<a href="{% url 'cart_detail' %}">Перейти в корзину</a>
+
+<a href="{% url 'cart_clear' %}">Очистить корзину</a>
+</div>
+{%endblock%}
+{% block js %}
+<script>
+let web = new WebSocket("wss://"+window.location.host+"/check/")
+
+web.onopen = function (event){
+    console.log("Success connection")
+}
+web.onmessage = function(event){
+    init_table()
+    console.log("Success Update")
+}
+
+web.onclose = function(event){
+    console.log("Close connection")
+}
+      function table_init(){
+        $(document).ready(function () {
+
+            $('#Products').DataTable({
+                ajax:"getitems",
+
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Все"]],
+                responsive: true,
+                 language:{
+                    url: window.location.origin + "/items/ru.json"
+                },
+                autoWidth:false,
+                bDestroy:true,
+               	columns: [
+			{ "0": "Количество" },
+			{ "1": "Название",},
+			{ "2": "Цена" },
+			{ "3": "Описание" },
+			{ "4": "Фото",
+			 render: function (data, type, row) {
+               return '<img height="" width="10%" src="items/'+row[4]+'"/>';
+
+             }
+             },
+             { "5": "Действие" },
+		]
+            });
+
+        });
+    }
+
+    table_init()
+       function del(id){
+    $.ajax({
+        url:window.location.origin+`/del/${id}`,
+        method:"GET",
+        success:function(){
+             table_init()
+        },
+         error:function(){
+             table_init()
+        }
+    })
+}
+
+$("#FormSend").on("submit", function(event){
+    event.preventDefault()
+    _data = new FormData(this)
+    var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+	$.ajax({
+		url: window.location.origin,
+		method:"POST",
+		data: _data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        async:false,
+        success:function(){
+            web.send("Update")
+            init_table()
+            $('#FormSend')[0].reset();
+            location.reload();
+
+        }
+	});
+    return false;
+});
+
+
+</script>
+<script>
+function addcarto(id){
+ $.ajax({
+        url:`cart/add/${id}`,
+        method:"GET",
+        success:function(){
+             location.reload();
+
+        },
+         error:function(){
+             location.reload();
+        }
+    });}
+    function minus(id){
+ $.ajax({
+        url:`cart/item_decrement/${id}`,
+        method:"GET",
+        success:function(){
+             table_init()
+             location.reload();
+        },
+         error:function(){
+             table_init()
+             location.reload();
+        }
+    });}
+    function plus(id){
+ $.ajax({
+        url:`cart/item_increment/${id}`,
+        method:"GET",
+        success:function(){
+             table_init()
+            location.reload();
+        },
+         error:function(){
+             table_init()
+             location.reload();
+
+        }
+    });}
+ $.ajax({
+        url:"getitems",
+        method:"GET",
+        success:function(){
+             table_init()
+        },
+         error:function(){
+           ьtable_init()
+        }
+});
+
+
+</script>
+{% endblock %}
