@@ -1,5 +1,5 @@
 # Foodproject
-##first project on github
+## first project on github
 ## Food managment system on django
 
 
