@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 # Foodproject 0.0.1 alpha
-=======
-# Foodproject
+
 >>>>>>> 77b1998 (fix)
 ## first project on github
 ## Food managment system on django
