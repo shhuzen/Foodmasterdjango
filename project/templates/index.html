@@ -1,16 +1,13 @@
 {% load static %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
 
-<script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" href="items/css/style.css">
 <link rel="stylesheet" href="items/css/bootstrap.min.css">
     <link rel="stylesheet" href="items/css/bootstrap-icons.css">
     <!--<link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon"> -->
 <script src="items/script.js"></script>
 
-    <link rel="stylesheet" href="items/css/datatables.min.css"/>
     <link rel="stylesheet" href="items/css/select2.min.css"/>
     <link rel="stylesheet" href="items/css/jquery.json-viewer.css"/>
     <link rel="stylesheet" href="items/css/style.css ">
@@ -65,7 +62,7 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" id="sub" data-bs-dismiss="modal" class="btn btn-primary">Добавить</button>
+          <button onclick="table_init()" type="submit" id="sub" data-bs-dismiss="modal" class="btn btn-primary">Добавить</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
         </div>
         </form>
@@ -98,7 +95,8 @@
 </table>
 </div>
 
-
+<link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
+<script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
 {% load cart_tag %}
 
 
@@ -129,10 +127,20 @@
 
 <a href="{% url 'cart_detail' %}">Перейти в корзину</a>
 
-<a href="{% url 'cart_clear' %}">Очистить корзину</a>
+<a id="#clear_cart" class="clear_cart" onclick="" href="{% url 'cart_clear' %}">Очистить корзину</a>
+</div>
 </div>
 {%endblock%}
 {% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function(e){ // ждем окончание загрузки
+  setTimeout(function(){
+        var myElement = document.querySelector('.clear_cart') // ищем нужный элемент
+        myElement.click() // клик!
+        alert("Корзина очищена")
+    }, 100000) // 5000 msec = 5 sec
+})
+</script>
 <script>
 let web = new WebSocket("wss://"+window.location.host+"/check/")
 
@@ -215,9 +223,9 @@ $("#FormSend").on("submit", function(event){
     return false;
 });
 
-
 </script>
 <script>
+
 function addcarto(id){
  $.ajax({
         url:`cart/add/${id}`,
@@ -261,10 +269,10 @@ function addcarto(id){
         url:"getitems",
         method:"GET",
         success:function(){
-             table_init()
+
         },
          error:function(){
-           ьtable_init()
+
         }
 });
 
