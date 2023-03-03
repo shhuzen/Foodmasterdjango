@@ -2,7 +2,6 @@
 
 ## first project on github
 ## Food managment system on django
-# head
 ### quick start 
 - start 
 - cd project    
