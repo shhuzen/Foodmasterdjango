@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
 
@@ -61,6 +60,7 @@
       </div>
     </div>
     </div>
+<div style="display:none" class="fullcontent">
 
 <div class="container">
 <nav class="navbar navbar-light bg-light">
@@ -153,9 +153,17 @@
      {% endif %}
     </nav>
     </div>
+
+</div>
 {%endblock%}
 {% block js %}
 <script>
+$(function() {
+  var seconds = 2; // wait this long
+  setTimeout(function() {
+    $('.fullcontent').fadeIn();
+  }, seconds * 200);
+});
 document.addEventListener('DOMContentLoaded', function(e){ // ждем окончание загрузки
   setTimeout(function(){
         var myElement = document.querySelector('.clear_cart') // ищем нужный элемент
