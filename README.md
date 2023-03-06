@@ -1,5 +1,5 @@
-# Foodproject 0.0.1 alpha
-
+# Foodproject 0.0.5 alpha
+https://www.youtube.com/watch?v=AzTYc4_aVY4
 ## first project on github
 ## Food managment system on django
 ### quick start 
