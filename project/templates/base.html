@@ -1,6 +1,52 @@
+
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
+
+    <style>
+   #trlist.activated {
+   color: red !important;
+}
+
+</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js" integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+            $(document).ready(function() {
+    // make all links with data-confirm prompt the user first.
+    $('[data-confirm]').on("click", function (e) {
+        e.preventDefault();
+        var msg = $(this).data("confirm");
+        if(confirm(msg)==true) {
+            var url = this.href;
+            if(url.length>0) window.location = url;
+            return true;
+        }
+        return false;
+    });
+
+    // on certain links save the scroll postion.
+    $('.saveScrollPostion').on("click", function (e) {
+        e.preventDefault();
+        var currentYOffset = window.pageYOffset;  // save current page postion.
+        Cookies.set('jumpToScrollPostion', currentYOffset);
+        if(!$(this).attr("data-confirm")) {  // if there is no data-confirm on this link then trigger the click. else we have issues.
+            var url = this.href;
+            window.location = url;
+            //$(this).trigger('click');  // continue with click event.
+        }
+    });
+
+    // check if we should jump to postion.
+    if(Cookies.get('jumpToScrollPostion') !== "undefined") {
+        var jumpTo = Cookies.get('jumpToScrollPostion');
+        window.scrollTo(0, jumpTo);
+        Cookies.remove('jumpToScrollPostion');  // and delete cookie so we don't jump again.
+    }
+});
+        </script>
+</script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,25 +54,61 @@
   src="https://code.jquery.com/jquery-1.12.4.js"
   integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
   crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="items/css/bootstrap.min.css">
-    <link rel="stylesheet" href="items/css/bootstrap-icons.css">
-    <link rel="stylesheet" href="items/css/datatables.min.css"/>
-    <link rel="stylesheet" href="items/css/select2.min.css"/>
-    <link rel="stylesheet" href="items/css/jquery.json-viewer.css"/>
-    <link rel="stylesheet" href="items/css/style.css">
+     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/jquery.json-viewer.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>{% block title %} {% endblock %} </title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
+{% if user.is_authenticated %}
+<div style="display:none" class="container fullcontent" >
+<nav class="navbar navbar-light bg-light">
+
+<a role="button"class="btn btn-success" href="{% url 'main_page'%}">Продукты/Главная страница</a>
+    <a role="button" class="btn btn-success" href="{% url 'orders'%}">Заказы</a>
+
+    <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
+
+
+
+               <a href="{% url 'logout' %}" type="button"  class="btn btn-danger">Выйти</a>
+
+
+
+
+            <!--<button onclick="myFunction()" class="btn btn-danger" id="dark-mode"><i class="bx bx-moon">Darkmode</i></button>-->
+    </nav>
+</div>
+{% endif %}
+
  {% block content %}
+
  {% endblock %}
-    <script src="items/css/jquery-3.6.0.min.js"></script>
-    <script src="items/css/jquery.json-viewer.js"></script>
-    <script src="items/css/bootstrap.bundle.min.js"></script>
-    <script src="items/css/datatables.min.js"></script>
-    <script src="items/css//select2.min.js"></script>
+
+    <script src="{% static 'css/jquery-3.6.0.min.js'%}"></script>
+    <script src="{% static 'css/jquery.json-viewer.js'%}"></script>
+    <script src="{% static 'css/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'css/datatables.min.js'%}"></script>
+    <script src="{% static 'css/select2.min.js'%}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"
     integrity="sha256-c9vxcXyAG4paArQG3xk6DjyW/9aHxai2ef9RpMWO44A=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
     {%block js %}{%endblock%}
 </body>
+<script>
+    $(function() {
+  var seconds = 2; // wait this long
+  setTimeout(function() {
+    $('.fullcontent').fadeIn();
+
+  }, seconds * 25);
+});
+</script>
+
+
 </html>

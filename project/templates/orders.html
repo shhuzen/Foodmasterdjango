@@ -1,0 +1,547 @@
+{% extends 'base.html' %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#ModalAdd">Добавить Продукт</button>
+
+    <title>{% block title %} Заказы{% endblock %} </title>
+
+{% load bootstrap5 %}
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{%block content%}
+  <link href="items/css/style.css" rel="stylesheet" id="lnk">
+
+<!--Modal ЧЕК-->
+<div class="modal fade" id="ModalCheck" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div  class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5  class="modal-title" >Чек</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <form class="modal-body" method="" enctype="" action="" >
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"
+    integrity="sha256-c9vxcXyAG4paArQG3xk6DjyW/9aHxai2ef9RpMWO44A=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<div id="" style="background: #fff;border-bottom: 1px solid #ffffff;">
+{% load cart_tag %}
+
+
+<div id="content2" class="row g-3">
+            <div class="col-md-12">
+  <div class="tokenDet"
+        style="padding: 15px;border: 1px solid #000;width: 80%;margin: 0 auto;position: relative;overflow: hidden;">
+        <div class="title" style="text-align: center; color: green; border-bottom: 1px solid #000;margin-bottom: 15px;">
+            <h2>Чек на сумму:{{total}} рублей</h2>
+        </div>
+{% if request.session.cart|length > 0 %}
+
+    <li>Количество товара : {{request.session.cart|length}}</li>
+<li>Корзина:</li>
+{% else %}
+{% endif %}
+<div style="display:flex;flex-wrap: wrap;">
+{% for key,value in request.session.cart.items %}
+<!--<img src="{{value.image}}" width="120" height="80"><br>-->
+   <ul>
+       <li>Название: {{value.name}}<br></li>
+    <!--<li>Цена: {{value.price}} р. <br></li> -->
+    <li>Количество: {{value.quantity}}  <br></li>
+     <li>Стоимость: {{ value.price|multiply:value.quantity }} р.</li>
+
+   </ul>
+
+{% endfor %}
+
+</div>
+    <li>Общая стоимость {{ total }} р.</li>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+       <!-- <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>-->
+        </form>
+              <button class="btn btn-info" id="downloadPDF">Распечать чек в PDF</button>
+        <a id="#addtorder" data-bs-toggle="modal" data-bs-target="#ModalCart" class="clear_cart btn btn-danger" onclick="" href="">Оформить заказ</a>
+
+      </div>
+    </div>
+  </div>
+<!--Modal Добавит в карту-->
+<div class="modal fade" id="ModalCart" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabels">Добавить заказ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <form class="modal-body" method="POST" enctype="multipart/form-data" action="{% url 'CartAdd' %}" >
+
+            {% csrf_token %}
+            <input name="id" id="id_add" hidden>
+        <div>
+          <div class="row g-3">
+            <div class="col-md-12">
+                <label class="form-label">Столик</label>
+                <input class="form-control" type="number" id="mesto" name="mesto">
+            </div>
+        <div class="col-md-12">
+                <label class="form-label"><i class="bi bi-credit-card"></i> Карта лояльности <i class="bi bi-credit-card"></i></label>
+
+                <input class="form-control" placeholder="+79898833232" type="phone" id="cartloyal" name="cartloyal">
+            </div>
+              <div class="col-12">
+                    <label class="form-label">Чек</label>
+                    <input type="file" class="form-control" id="check_file" name="check_file">
+                </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!--Modal Изменение продукта-->
+    <div class="modal fade" id="ModalEdit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Изменение Продукта</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <form class="modal-body" method="POST" enctype="multipart/form-data" action="{% url 'edit_product' %}" >
+
+           <div class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <input name="id" id="id_edit" hidden>
+                    <label class="form-label">Название продукта</label>
+                    <input class="form-control" data="col_2" id="nameedit" name="nameedit">
+                    <div class="invalid-feedback">
+                        Такое имя уже есть
+                    </div>
+                </div>
+                <div class="col-12" id="adderq">
+                </div>
+                  <div class="col-12">
+
+                    <label class="form-label">Общее количество</label>
+                    <input required type="number" class="form-control" data="allquantityedit" id="allquantityedit" name="allquantityedit" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Описание</label>
+                    <input required type="text" class="form-control" data="col_zakaz4ik" id="descedit" name="descedit" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Фото</label>
+                    <input type="file" class="form-control" id="file_moreedit" name="file_moreedit">
+                </div>
+                <div class="col-12">
+    <label class="form-label">Цена</label>
+                    <input required type="number" id="priceedit" class="form-control" data="col_zakaz4ik" name="priceedit" >
+                </div>
+                <div class="col-12">
+
+                </div>
+            </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- Dobavlnie modal -->
+<div class="modal fade" id="ModalAdd" data-bs-backdrop="static" data-bs-keyboard="false"  tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg ">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Новый продукт</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="FormSend" method="POST" class="modal-body" enctype="multipart/form-data" >
+        <div>
+            <div class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label class="form-label">Название продукта</label>
+                    <input class="form-control" id="req" data="col_2" id="name" name="name">
+                    <div class="invalid-feedback">
+                        Такое требование уже есть
+                    </div>
+                </div>
+                <div class="col-12" id="adder">
+                </div>
+                  <div class="col-12">
+
+                    <label class="form-label">Общее количество</label>
+                    <input required type="number" class="form-control" data="allquantity" id="allquantity" name="allquantity" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Описание</label>
+                    <input required type="text" class="form-control" data="col_zakaz4ik" id="desc" name="desc" >
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Фото</label>
+                    <input type="file" class="form-control" id="file_mor" name="file_more">
+                </div>
+                <div class="col-12">
+    <label class="form-label">Цена</label>
+                    <input required type="number" id="price" class="form-control" data="col_zakaz4ik" name="price" >
+                </div>
+                <div class="col-12">
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="sub" data-bs-dismiss="modal" class="btn btn-primary">Добавить</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+        </form>
+      </div>
+    </div>
+    </div>
+<div style="display:none" class="fullcontent" id="fullcontent">
+
+
+<div class="container">
+<div class="modal-body">
+
+<table id="Orders" class="table table-hover table-bordered dataTable display" style="width: 100%;" >
+
+    <thead>
+        <tr id="trlist" class="trlist">
+
+
+            <th onclick="sorting sorting_desc">Столик</th>
+            <th onclick="">К оплате</th>
+             <th onclick="">Продукты</th>
+            <th onclick="">Дата добавления</th>
+            <th class="" onclick="delete_duplicate()">Последние изменение</th>
+            <th onclick="">Статус</th>
+            <th class="" onclick="delete_duplicate()">Действие</th>
+            <th onclick="">Время оплаты</th>
+            <th class="" onclick="delete_duplicate()">ЧЕК</th>
+            <th onclick=""><i class="bi bi-credit-card-fill"></i>
+</th>
+
+
+        </tr>
+    </thead>
+    <tbody class="usrtbl">
+    </tbody>
+</table>
+
+</div>
+</div>
+<link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
+<script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js"></script>
+
+<div id="Hidediv" class="container cartmain" style="display:block">
+{% load cart_tag %}
+
+
+{% if request.session.cart|length > 0 %}
+<li>Количество товара : {{request.session.cart|length}}</li>
+<li>Корзина:</li>
+{% else %}
+{% endif %}
+<div>
+<div class="col-md-auto cartinside" style="display:flex">
+{% for key,value in request.session.cart.items %}
+    <div class="voucher">
+<img src="{{value.image}}" width="120" height="80"><br>
+   <ul style="width:30% min-height:30%">
+       <li name="product_name">Название: {{value.name}}<br></li>
+    <li name="product_price">Цена: {{value.price}} р. <br></li>
+    <li name="product_price">Количество: {{value.quantity}}  <br></li>
+
+     <li>Стоимость: {{ value.price|multiply:value.quantity }} р.</li>
+ <div style="display:flex; width:100%; height:100%;"><button  style="    height: 10%;
+    margin-top: 10px" onclick="plus({{value.product_id}})" class="btn btn-success">+</button>
+<button style="    height: 10%;
+    margin-top: 10px"   onclick ="minus({{value.product_id}})" class="btn btn-danger">-</button>
+   </ul>
+</div>
+{% endfor %}
+
+
+    </div>
+<div class="col-3">
+            {% if request.session.cart|length > 0 %}
+    {% else %}
+    <li>Ваша корзина пуста</li>
+     {% endif %}
+
+
+</div>
+    </div>
+    </div>
+    <div>
+        </div>
+  <!-- Нижние меню -->
+    <div style="" class="container lgmenu">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+<button data-bs-toggle="modal"  data-bs-target="#ModalCheck" role="button" class="btn btn-success" href="{% url 'cart_detail' %}">Распечатать ЧЕК</button>
+<button role="button" onclick="showDiv()" class="hide btn btn-success">Показать/Скрыть корзину</button>
+<a id="#clear_cart" class="clear_cart btn btn-danger" onclick="" href="{% url 'cart_clear' %}">Очистить корзину</a>
+
+                    {% if request.session.cart|length > 0 %}
+        <div style="padding-left: 25%;">
+        <button type="button" class="btn btn-primary">
+   Общая стоимость<span name="product_allprice" class="badge success"> {{ total }}</span>
+  <span class="sr-only"> Рублей</span>
+        </button>
+        <a id="#addtorder" data-bs-toggle="modal" data-bs-target="#ModalCart" class="clear_cart btn btn-danger" onclick="" href="">Оформить заказ</a>
+</div></nav>
+</button>
+
+    {% else %}
+     {% endif %}
+    </nav>
+    </div>
+
+</div>
+{%endblock%}
+{% block js %}
+    <script>$('#downloadPDF').click(function () {
+    domtoimage.toPng(document.getElementById('content2'))
+        .then(function (blob) {
+            var pdf = new jsPDF('l', 'pt', [$('#content2').width(), $('#content2').height()]);
+
+            pdf.addImage(blob, 'PNG', 0, 0, $('#content2').width(), $('#content2').height());
+            pdf.save("{{total}}rub.pdf");
+
+            that.options.api.optionsChanged();
+        });
+});
+</script>
+<script>
+
+                        function myFunction() {
+                            if (localStorage.getItem('isDarkMode')=='true'){
+                                localStorage.setItem('isDarkMode', false)}
+                                else
+                                {localStorage.setItem('isDarkMode', true)}
+                                toggle_color();
+                        };
+
+                        function toggle_color(){
+                            if (localStorage.getItem('isDarkMode')=='true'){
+
+                            document.getElementById('fullcontent').classList.add('dark-mode');
+                            $("td").addClass('dark-modetd')
+                            $(".even").addClass('dark-modetd')
+                            $(".odd").addClass('dark-modetd')
+                            $("tr").addClass('dark-modetd')
+
+                            $("nav").addClass('bg-dark')
+                        }
+                        if (localStorage.getItem('isDarkMode') === 'false'){
+                        $("nav").removeClass('bg-dark')
+                         $("nav").addClass('bg-light')
+                            $("tr").removeClass('dark-modetd')
+                            $("td").removeClass('dark-modetd')
+                            $(".odd").removeClass('dark-modetd')
+                            $(".even").removeClass('dark-modetd')
+                            document.getElementById('fullcontent').classList.remove('dark-mode');
+                            };
+                        }
+                        toggle_color()
+
+document.addEventListener('DOMContentLoaded', function(e){ // ждем окончание загрузки
+  setTimeout(function(){
+        var myElement = document.querySelector('.clear_cart') // ищем нужный элемент
+        myElement.click() // клик!
+    alert("Корзина очищена нажмите ок чтоб продолжить!")
+
+    }, 100000) // 5000 msec = 5 sec
+
+})
+$(".clear_cart").click(function() {
+x});
+</script>
+<script>
+let web = new WebSocket("wss://"+window.location.host+"/check/")
+
+web.onopen = function (event){
+    console.log("Success connection")
+}
+web.onmessage = function(event){
+    init_table()
+    console.log("Success Update")
+}
+
+web.onclose = function(event){
+    console.log("Close connection")
+}
+      function table_init(){
+        $(document).ready(function () {
+
+            $('#Orders').DataTable({
+                ajax:"cartitems",
+
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Все"]],
+
+                responsive: true,
+                 language:{
+                    url:'/items/ruorders.json'
+                },
+                autoWidth:false,
+                bDestroy:true,
+
+            });
+
+        });
+    }
+
+    table_init()
+    function edit(id){
+    $.ajax({
+        url:window.location.origin + `/api/get-more/${id}`,
+        success:function(data){
+         console.log(data)
+            document.getElementById("id_edit").value = data.id
+
+            document.getElementById("allquantityedit").value = data.amount
+            document.getElementById("descedit").value = data.desc
+            document.getElementById("priceedit").value = data.price
+            document.getElementById("nameedit").value = data.name
+        }
+    })
+}
+       function del(id){
+    $.ajax({
+        url:window.location.origin+`/del/${id}`,
+        method:"GET",
+        success:function(){
+             table_init()
+        },
+         error:function(){
+             table_init()
+        }
+    })
+}
+
+
+$("#FormSend").on("submit", function(event){
+    event.preventDefault()
+    _data = new FormData(this)
+    var csrftoken = $('[name="csrfmiddlewaretoken"]').val();
+	$.ajax({
+		url: window.location.origin,
+		method:"POST",
+		data: _data,
+        cache: false,
+        processData: false,
+        contentType: false,
+        async:false,
+        success:function(){
+            table_init()
+            $('#FormSend')[0].reset();
+
+        },
+         error:function(){
+            table_init()
+
+        }
+	});
+    return false;
+});
+
+
+</script>
+<script>
+$('#trlist').on('click', function() {
+var colors = ['#ff0000', '#00ff00', '#0000ff'];
+var random_color = colors[Math.floor(Math.random() * colors.length)];
+$(this).css('color', random_color);
+});
+function showDiv() {
+d = document.getElementById('Hidediv')
+if(d.style.display == "block"){
+   d.style.display = "none";
+   }
+   else{
+    d.style.display = "block";}
+}
+function addcarto(id){
+ $.ajax({
+        url:`cart/add/${id}`,
+        method:"GET",
+        success:function(){
+             location.reload();
+
+        },
+         error:function(){
+        }
+    });}
+    function minus(id){
+ $.ajax({
+        url:`cart/item_decrement/${id}`,
+        method:"GET",
+        success:function(){
+             location.reload();
+        },
+         error:function(){
+
+        }
+    });}
+    function plus(id){
+ $.ajax({
+        url:`cart/item_increment/${id}`,
+        method:"GET",
+        success:function(){
+             location.reload();
+        },
+         error:function(){
+
+        }
+    });}
+    function orderchange(id){
+ $.ajax({
+        url:`orders/changestatus/${id}`,
+        method:"GET",
+        success:function(){
+            location.reload();
+        },
+         error:function(){
+            location.reload();
+
+        }
+    });}
+ $.ajax({
+        url:"getitems",
+        method:"GET",
+        success:function(){
+        },
+         error:function(){
+        }
+});
+
+
+</script>
+
+
+
+{% endblock %}

@@ -1,12 +1,12 @@
 {
     "processing": "Подождите...",
     "search": "Поиск:",
-    "lengthMenu": "Показать _MENU_ записей",
-    "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
-    "infoEmpty": "Записи с 0 до 0 из 0 записей",
-    "infoFiltered": "(отфильтровано из _MAX_ записей)",
-    "loadingRecords": "Загрузка записей...",
-    "zeroRecords": "Записи отсутствуют.",
+    "lengthMenu": "Показать _MENU_ Продуктов",
+    "info": "Продуктов с _START_ до _END_ из _TOTAL_ Продуктов",
+    "infoEmpty": "Продуктов с 0 до 0 из 0 Продуктов",
+    "infoFiltered": "(отфильтровано из _MAX_ продуктов)",
+    "loadingRecords": "Загрузка Продуктов...",
+    "zeroRecords": "Продукты отсутствуют.",
     "emptyTable": "В таблице отсутствуют данные",
     "paginate": {
         "first": "Первая",

@@ -8,6 +8,7 @@
 - py manage.py runserver 
 - go to :
 http://127.0.0.1:8000/
+- login admin foodmanag pass Dendirak1
 <h1 style="color:green">screenshots/videos</h1>
 https://www.youtube.com/embed/iJ-t7XjrAjU
 
