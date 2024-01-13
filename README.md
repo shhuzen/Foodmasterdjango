@@ -1,4 +1,4 @@
-# Foodproject 0.0.5 alpha
+# Foodproject 0.0.5 alpha Начало 2022 Первый проект xD
 https://www.youtube.com/watch?v=AzTYc4_aVY4
 ## first project on github
 ## Food managment system on django
